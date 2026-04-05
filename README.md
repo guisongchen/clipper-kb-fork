@@ -39,6 +39,37 @@ In no particular order:
 - [x] Save images locally, [added in Obsidian 1.8.0](https://obsidian.md/changelog/2024-12-18-desktop-v1.8.0/)
 - [x] Translate UI into more languages — help is welcomed
 
+## Fork Features (Knowledge Base Integration)
+
+This fork adds local knowledge base integration for saving web clips directly to your local filesystem.
+
+### Save to Local Knowledge Base
+
+Save clips directly to a local knowledge base (e.g., PARA-based system) via HTTP:
+
+1. Start the kb-server in your knowledge base directory:
+   ```bash
+   ~/projects/knowledge_database/kb-server
+   # Or run in background:
+   nohup ~/projects/knowledge_database/kb-server > /tmp/kb-server.log 2>&1 &
+   ```
+
+2. In Web Clipper settings (General → Behavior), select **"Save to local KB"** as the default save behavior.
+
+3. When you clip a page, it will be sent via HTTP POST to `localhost:8787/clip` and saved to `00_inbox/` in your knowledge base.
+
+4. The main button will show "Saved to KB!" for 2 seconds to confirm success.
+
+### Custom Downloads Directory
+
+When using "Save file" behavior, you can specify a subdirectory within Downloads:
+
+1. Go to Settings → General → Behavior
+2. Enter a directory path (e.g., `knowledge_database/00_inbox`)
+3. Files will save to `Downloads/knowledge_database/00_inbox/`
+
+Note: Browser security restricts downloads to the Downloads folder. For arbitrary paths, use the "Save to local KB" option instead.
+
 ## Developers
 
 To build the extension:
