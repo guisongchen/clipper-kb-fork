@@ -47,16 +47,16 @@ This fork adds local knowledge base integration for saving web clips directly to
 
 Save clips directly to a local knowledge base (e.g., PARA-based system) via HTTP:
 
-1. Start the kb-server in your knowledge base directory:
+1. Start kb-web in your knowledge base directory:
    ```bash
-   ~/projects/knowledge_database/kb-server
+   ~/projects/knowledge_database/kb-web
    # Or run in background:
-   nohup ~/projects/knowledge_database/kb-server > /tmp/kb-server.log 2>&1 &
+   nohup ~/projects/knowledge_database/kb-web > /tmp/kb-web.log 2>&1 &
    ```
 
 2. In Web Clipper settings (General → Behavior), select **"Save to local KB"** as the default save behavior.
 
-3. When you clip a page, it will be sent via HTTP POST to `localhost:8787/clip` and saved to `00_inbox/` in your knowledge base.
+3. When you clip a page, it will be sent via HTTP POST to `localhost:8002/api/clip` and saved to `00_inbox/` in your knowledge base.
 
 4. The main button will show "Saved to KB!" for 2 seconds to confirm success.
 

@@ -1220,7 +1220,7 @@ async function handleSaveToLocalKB() {
 		const fileContent = frontmatter + noteContentField.value;
 
 		// Send to local KB server
-		const response = await fetch('http://localhost:8787/clip', {
+		const response = await fetch('http://localhost:8002/api/clip', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
