@@ -318,6 +318,9 @@
 	"failedToSaveFile": {
 		"message": "Failed to save file"
 	},
+	"failedToSaveToLocalKB": {
+		"message": "Failed to save to local KB. Is kb-server running on port 8787?"
+	},
 	"failedToSaveProvider": {
 		"message": "Failed to save provider. Please try again."
 	},
@@ -822,8 +825,20 @@
 	"saveBehaviorLabel": {
 		"message": "Save behavior"
 	},
+	"downloadsDirectoryLabel": {
+		"message": "Downloads directory"
+	},
+	"downloadsDirectoryDescription": {
+		"message": "Optional subdirectory within your Downloads folder where clipped files will be saved. Leave empty to use the default Downloads folder."
+	},
 	"saveFile": {
 		"message": "Save file..."
+	},
+	"saveToLocalKB": {
+		"message": "Save to local KB"
+	},
+	"savedToKB": {
+		"message": "Saved to KB!"
 	},
 	"searchVariables": {
 		"message": "Search variables..."

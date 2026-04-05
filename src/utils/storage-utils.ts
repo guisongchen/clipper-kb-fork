@@ -39,11 +39,13 @@ export let generalSettings: Settings = {
 		addToObsidian: 0,
 		saveFile: 0,
 		copyToClipboard: 0,
-		share: 0
+		share: 0,
+		saveToLocalKB: 0
 	},
 	history: [],
 	ratings: [],
-	saveBehavior: 'addToObsidian'
+	saveBehavior: 'addToObsidian',
+	downloadsDirectory: ''
 };
 
 export function setLocalStorage(key: string, value: any): Promise<void> {
@@ -61,7 +63,8 @@ interface StorageData {
 		legacyMode?: boolean;
 		silentOpen?: boolean;
 		openBehavior?: boolean | 'popup' | 'embedded';
-		saveBehavior?: 'addToObsidian' | 'copyToClipboard' | 'saveFile';
+		saveBehavior?: 'addToObsidian' | 'copyToClipboard' | 'saveFile' | 'saveToLocalKB';
+		downloadsDirectory?: string;
 	};
 	vaults?: string[];
 	highlighter_settings?: {
@@ -96,6 +99,7 @@ interface StorageData {
 		saveFile: number;
 		copyToClipboard: number;
 		share: number;
+		saveToLocalKB: number;
 	};
 	history?: HistoryEntry[];
 	ratings?: Rating[];
@@ -143,10 +147,12 @@ export async function loadSettings(): Promise<Settings> {
 			addToObsidian: 0,
 			saveFile: 0,
 			copyToClipboard: 0,
-			share: 0
+			share: 0,
+			saveToLocalKB: 0
 		},
 		history: [],
 		ratings: [],
+		downloadsDirectory: '',
 	};
 
 	// Update migration version if needed
@@ -200,7 +206,8 @@ export async function loadSettings(): Promise<Settings> {
 		stats: data.stats || defaultSettings.stats,
 		history: data.history || defaultSettings.history,
 		ratings: data.ratings || defaultSettings.ratings,
-		saveBehavior: data.general_settings?.saveBehavior ?? defaultSettings.saveBehavior
+		saveBehavior: data.general_settings?.saveBehavior ?? defaultSettings.saveBehavior,
+		downloadsDirectory: data.general_settings?.downloadsDirectory ?? defaultSettings.downloadsDirectory
 	};
 
 	generalSettings = loadedSettings;
@@ -222,6 +229,7 @@ export async function saveSettings(settings?: Partial<Settings>): Promise<void> 
 			silentOpen: generalSettings.silentOpen,
 			openBehavior: generalSettings.openBehavior,
 			saveBehavior: generalSettings.saveBehavior,
+			downloadsDirectory: generalSettings.downloadsDirectory,
 		},
 		highlighter_settings: {
 			highlighterEnabled: generalSettings.highlighterEnabled,

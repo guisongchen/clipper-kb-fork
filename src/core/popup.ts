@@ -1186,7 +1186,8 @@ async function handleSaveToDownloads() {
 			fileName,
 			mimeType: 'text/markdown',
 			tabId: currentTabId,
-			onError: (error) => showError('failedToSaveFile')
+			onError: (error) => showError('failedToSaveFile'),
+			directory: loadedSettings.downloadsDirectory
 		});
 
 		const tabInfo = await getCurrentTabInfo();
@@ -1199,6 +1200,62 @@ async function handleSaveToDownloads() {
 	} catch (error) {
 		console.error('Failed to save file:', error);
 		showError('failedToSaveFile');
+	}
+}
+
+async function handleSaveToLocalKB() {
+	try {
+		const noteNameField = document.getElementById('note-name-field') as HTMLInputElement;
+		const pathField = document.getElementById('path-name-field') as HTMLInputElement;
+		const vaultDropdown = document.getElementById('vault-select') as HTMLSelectElement;
+
+		let fileName = noteNameField?.value || 'untitled';
+		const path = pathField?.value || '';
+		const vault = vaultDropdown?.value || '';
+
+		const properties = getPropertiesFromDOM();
+
+		const noteContentField = document.getElementById('note-content-field') as HTMLTextAreaElement;
+		const frontmatter = await generateFrontmatter(properties);
+		const fileContent = frontmatter + noteContentField.value;
+
+		// Send to local KB server
+		const response = await fetch('http://localhost:8787/clip', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				filename: `${fileName}.md`,
+				content: fileContent
+			})
+		});
+
+		if (!response.ok) {
+			const error = await response.json();
+			throw new Error(error.error || 'Failed to save to local KB');
+		}
+
+		const tabInfo = await getCurrentTabInfo();
+		await incrementStat('saveFile', vault, path, tabInfo.url, tabInfo.title);
+
+		const moreDropdown = document.getElementById('more-dropdown');
+		if (moreDropdown) {
+			moreDropdown.classList.remove('show');
+		}
+
+		// Show success message on main button
+		const clipButton = document.getElementById('clip-btn');
+		if (clipButton) {
+			const originalText = clipButton.textContent || getMessage('saveToLocalKB');
+			clipButton.textContent = getMessage('savedToKB');
+			setTimeout(() => {
+				clipButton.textContent = originalText;
+			}, 2000);
+		}
+	} catch (error) {
+		console.error('Failed to save to local KB:', error);
+		showError('failedToSaveToLocalKB');
 	}
 }
 
@@ -1219,6 +1276,7 @@ function determineMainAction() {
 			// Add direct actions to secondary
 			addSecondaryAction(secondaryActions, 'addToObsidian', () => handleClipObsidian());
 			addSecondaryAction(secondaryActions, 'saveFile', handleSaveToDownloads);
+			addSecondaryAction(secondaryActions, 'saveToLocalKB', handleSaveToLocalKB);
 			break;
 		case 'saveFile':
 			mainButton.textContent = getMessage('saveFile');
@@ -1226,6 +1284,15 @@ function determineMainAction() {
 			// Add direct actions to secondary
 			addSecondaryAction(secondaryActions, 'addToObsidian', () => handleClipObsidian());
 			addSecondaryAction(secondaryActions, 'copyToClipboard', copyContent);
+			addSecondaryAction(secondaryActions, 'saveToLocalKB', handleSaveToLocalKB);
+			break;
+		case 'saveToLocalKB':
+			mainButton.textContent = getMessage('saveToLocalKB');
+			mainButton.onclick = () => handleSaveToLocalKB();
+			// Add direct actions to secondary
+			addSecondaryAction(secondaryActions, 'addToObsidian', () => handleClipObsidian());
+			addSecondaryAction(secondaryActions, 'copyToClipboard', copyContent);
+			addSecondaryAction(secondaryActions, 'saveFile', handleSaveToDownloads);
 			break;
 		default: // 'addToObsidian'
 			mainButton.textContent = getMessage('addToObsidian');
@@ -1233,6 +1300,7 @@ function determineMainAction() {
 			// Add direct actions to secondary
 			addSecondaryAction(secondaryActions, 'copyToClipboard', copyContent);
 			addSecondaryAction(secondaryActions, 'saveFile', handleSaveToDownloads);
+			addSecondaryAction(secondaryActions, 'saveToLocalKB', handleSaveToLocalKB);
 	}
 }
 
@@ -1323,6 +1391,7 @@ function getActionIcon(actionType: string): string {
 	switch (actionType) {
 		case 'copyToClipboard': return 'copy';
 		case 'saveFile': return 'file-down';
+		case 'saveToLocalKB': return 'database';
 		case 'addToObsidian': return 'pen-line';
 		default: return 'plus';
 	}

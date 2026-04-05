@@ -227,6 +227,7 @@ export function initializeGeneralSettings(): void {
 		initializeHighlighterSettings();
 		initializeExportHighlightsButton();
 		initializeSaveBehaviorDropdown();
+		initializeDownloadsDirectoryInput();
 		await initializeUsageChart();
 
 		// Initialize feedback modal close button
@@ -367,9 +368,19 @@ function initializeSaveBehaviorDropdown(): void {
 
     dropdown.value = generalSettings.saveBehavior;
     dropdown.addEventListener('change', () => {
-        const newValue = dropdown.value as 'addToObsidian' | 'copyToClipboard' | 'saveFile';
+        const newValue = dropdown.value as 'addToObsidian' | 'copyToClipboard' | 'saveFile' | 'saveToLocalKB';
         saveSettings({ saveBehavior: newValue });
     });
+}
+
+function initializeDownloadsDirectoryInput(): void {
+    const input = document.getElementById('downloads-directory-input') as HTMLInputElement;
+    if (!input) return;
+
+    input.value = generalSettings.downloadsDirectory;
+    input.addEventListener('input', debounce(() => {
+        saveSettings({ downloadsDirectory: input.value.trim() });
+    }, 500));
 }
 
 export function resetDefaultTemplate(): void {

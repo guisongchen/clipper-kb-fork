@@ -400,6 +400,28 @@ browser.runtime.onMessage.addListener((request: unknown, sender: browser.Runtime
 			return true;
 		}
 
+		if (typedRequest.action === "downloadFile") {
+			const { url, filename } = typedRequest as unknown as { url: string; filename: string };
+			console.log('[Clipper Background] Download request:', filename);
+			if (url && filename) {
+				browser.downloads.download({
+					url: url,
+					filename: filename,
+					saveAs: false
+				}).then((downloadId) => {
+					console.log('[Clipper Background] Download started, ID:', downloadId);
+					sendResponse({ success: true, downloadId });
+				}).catch((error) => {
+					console.error('[Clipper Background] Download error:', error);
+					sendResponse({ success: false, error: error instanceof Error ? error.message : String(error) });
+				});
+				return true;
+			} else {
+				sendResponse({ success: false, error: 'Missing url or filename' });
+				return true;
+			}
+		}
+
 		if (typedRequest.action === "copyMarkdownToClipboard" || typedRequest.action === "saveMarkdownToFile") {
 			if (sender.tab?.id) {
 				(async () => {

@@ -41,10 +41,12 @@ export const generalSettings: Settings = {
 		saveFile: 0,
 		copyToClipboard: 0,
 		share: 0,
+		saveToLocalKB: 0,
 	},
 	history: [],
 	ratings: [],
 	saveBehavior: 'addToObsidian',
+	downloadsDirectory: '',
 };
 
 export const loadSettings = async () => {};
