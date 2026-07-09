@@ -1,7 +1,14 @@
+/**
+ * @vitest-environment jsdom
+ */
+
+// Pin timezone so {{date}} output is deterministic across environments.
+process.env.TZ = 'America/Los_Angeles';
+
 import { describe, test, expect, vi, beforeAll, afterAll } from 'vitest';
 import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, basename, extname } from 'path';
-import { parseHTML } from 'linkedom';
+import { JSDOM } from 'jsdom';
 import DefuddleClass from 'defuddle';
 import { createMarkdownContent } from 'defuddle/full';
 import { buildVariables, generateFrontmatter, formatPropertyValue } from './shared';
@@ -28,7 +35,8 @@ interface FixtureTemplate {
 }
 
 async function runFixture(html: string, url: string, template: FixtureTemplate): Promise<string> {
-	const { document } = parseHTML(html);
+	const { window } = new JSDOM(html, { url });
+	const document = window.document;
 
 	// Run defuddle — same as CLI
 	const defuddle = new DefuddleClass(document as unknown as Document, { url });
